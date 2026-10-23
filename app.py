@@ -21,17 +21,27 @@ app.secret_key = "rentec_clave_segura"
 app.permanent_session_lifetime = timedelta(days=7)
 
 
-import os
-
 # ==========================================
-# CONFIGURACIÓN MYSQL INTELIGENTE (LOCAL / NUBE)
+# Configuración MySQL para bd local
 # ==========================================
 
-app.config["MYSQL_HOST"] = os.environ.get("MYSQL_HOST", "localhost")
-app.config["MYSQL_USER"] = os.environ.get("MYSQL_USER", "root")
-app.config["MYSQL_PASSWORD"] = os.environ.get("MYSQL_PASSWORD", "")
-app.config["MYSQL_DB"] = os.environ.get("MYSQL_DB", "rentec")
-app.config["MYSQL_PORT"] = int(os.environ.get("MYSQL_PORT", 3306))
+# app.config["MYSQL_HOST"] = "localhost"
+# app.config["MYSQL_USER"] = "root"
+# app.config["MYSQL_PASSWORD"] = ""
+# app.config["MYSQL_DB"] = "rentec"
+
+# mysql = MySQL(app)
+
+
+# ==========================================
+# Configuración MySQL para bd en aiven
+# ==========================================
+
+app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST')
+app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER')
+app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD')
+app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB')
+app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))
 
 mysql = MySQL(app)
 
