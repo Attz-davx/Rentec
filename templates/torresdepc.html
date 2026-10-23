@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Rentec - Torres de Computadora</title>
+
+    <link rel="icon"
+          href="{{ url_for('static', filename='imagenes/LOGO.jpeg') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='diseños.css') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+</head>
+
+<body>
+
+    
+<!-- ICONO FLOTANTE DEL CARRITO RENTEC -->
+<a href="{{ url_for('carrito') }}"
+   class="rentec-carrito-flotante"
+   aria-label="Abrir carrito de alquiler"
+   title="Mi carrito">
+
+    <svg xmlns="http://www.w3.org/2000/svg"
+         width="29" height="29"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="1.8"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+        <circle cx="9" cy="21" r="1"/>
+        <circle cx="20" cy="21" r="1"/>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+    </svg>
+
+    <span id="contador-carrito-flotante">0</span>
+</a>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    function actualizarContadorRentec() {
+        try {
+            const carrito = JSON.parse(
+                localStorage.getItem("rentec_carrito") || "[]"
+            );
+
+            const cantidad = carrito.reduce(
+                (total, producto) =>
+                    total + (Number(producto.cantidad) || 0),
+                0
+            );
+
+            const contador = document.getElementById(
+                "contador-carrito-flotante"
+            );
+
+            if (contador) {
+                contador.textContent = cantidad;
+                contador.style.display = cantidad > 0 ? "flex" : "none";
+            }
+        } catch (error) {
+            console.error("No se pudo leer el carrito de Rentec.");
+        }
+    }
+
+    actualizarContadorRentec();
+
+    window.addEventListener("storage", actualizarContadorRentec);
+});
+</script>
+
+<body>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"></script>
+
+    <header class="header">
+
+        <!-- Logo -->
+        <img src="{{ url_for('static', filename='imagenes/LOGO.jpeg') }}"
+             alt="Logo de Rentec"
+             class="logo">
+
+        <nav class="nav">
+            <ul>
+
+                <li>
+                    <a href="{{ url_for('inicio') }}">
+                        Página principal
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('nosotros') }}">
+                        Quiénes somos
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('mision') }}">
+                        Misión y visión
+                    </a>
+                </li>
+
+                {% if not session.get('id_usuario') %}
+
+                <li>
+                    <a href="{{ url_for('login_registro') }}">
+                        Registro/Login
+                    </a>
+                </li>
+
+                {% else %}
+
+                <li>
+                    <a href="{{ url_for('inicio_usuario') }}">
+                        👤 Hola, {{ session.get('nombre') }}
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('logout') }}">
+                        Cerrar sesión
+                    </a>
+                </li>
+
+                {% endif %}
+
+            </ul>
+        </nav>
+
+    </header>
+
+    <br>
+
+    <section class="imagenes1_titulo">
+        <h1>
+            Bienvenido a la empresa de alquiler de dispositivos Rentec
+        </h1>
+    </section>
+
+    <!-- Categorías -->
+    <section class="categorias">
+
+        <nav class="categorias1">
+            <ul>
+
+                <li>
+                    <a href="{{ url_for('computadores') }}">
+                        Computadores
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('tecladosmaus') }}">
+                        Teclados y Mouse
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('televisores') }}">
+                        Televisores
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ url_for('torresdepc') }}">
+                        Torres de Computadora
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+
+    </section>
+
+    <!-- Barra de búsqueda -->
+    <nav class="navbar bg-body-tertiary"
+         data-bs-theme="dark">
+
+        <div class="container-fluid">
+
+            <a class="navbar-brand"
+               href="{{ url_for('inicio') }}">
+
+                <img src="{{ url_for('static', filename='imagenes/LOGO.jpeg') }}"
+                     alt="Logo de Rentec"
+                     width="50"
+                     height="40"
+                     class="d-inline-block align-text-top">
+
+                Barra de búsqueda
+
+            </a>
+
+            <form class="d-flex"
+                  role="search"
+                  method="GET"
+                  action="{{ url_for('torresdepc') }}">
+
+                <input
+                    class="form-control me-2"
+                    type="search"
+                    name="buscar"
+                    placeholder="Buscar torre"
+                    aria-label="Buscar">
+
+                <button
+                    class="btn btn-outline-success"
+                    type="submit">
+                    Buscar
+                </button>
+
+            </form>
+
+        </div>
+    </nav>
+
+    <!-- Productos: Torres de computadora -->
+    <section class="productos-hp">
+
+        <div>
+            <a href="{{ url_for('torre1') }}">
+                <img
+                    src="{{ url_for('static', filename='imagenes/imagen_torre_pc.jfif.jpeg') }}"
+                    alt="Torre de computadora 1"
+                    class="imagen_torre_1">
+
+                <h5 class="titleimg">
+                    Torre de Computadora 1
+                </h5>
+            </a>
+        </div>
+
+        <div>
+            <a href="{{ url_for('torre2') }}">
+                <img
+                    src="{{ url_for('static', filename='imagenes/imagen_torre_pc2.jfif.jpeg') }}"
+                    alt="Torre de computadora 2"
+                    class="imagen_torre_2">
+
+                <h5 class="titleimg">
+                    Torre Gamer RGB
+                </h5>
+            </a>
+        </div>
+
+        <div>
+            <a href="{{ url_for('torre3') }}">
+                <img
+                    src="{{ url_for('static', filename='imagenes/imagen_torre_pc3.jfif.jpeg') }}"
+                    alt="Torre de computadora 3"
+                    class="imagen_torre_3">
+
+                <h5 class="titleimg">
+                    Torre de Computadora 3
+                </h5>
+            </a>
+        </div>
+
+        <div>
+            <a href="{{ url_for('torre4') }}">
+                <img
+                    src="{{ url_for('static', filename='imagenes/imagen_torre_pc4.jfif.jpeg') }}"
+                    alt="Torre de computadora 4"
+                    class="imagen_torre_4">
+
+                <h5 class="titleimg">
+                    Torre de Computadora 4
+                </h5>
+            </a>
+        </div>
+
+        <div>
+            <a href="{{ url_for('torre5') }}">
+                <img
+                    src="{{ url_for('static', filename='imagenes/imagen_torre_pc5.jfif.jpeg') }}"
+                    alt="Torre de computadora 5"
+                    class="imagen_torre_5">
+
+                <h5 class="titleimg">
+                    Torre Gamer de Alto Rendimiento
+                </h5>
+            </a>
+        </div>
+
+        <div>
+            <a href="{{ url_for('torre6') }}">
+                <img
+                    src="{{ url_for('static', filename='imagenes/imagen_torre_pc6.jfif.jpeg') }}"
+                    alt="Torre de computadora 6"
+                    class="imagen_torre_6">
+
+                <h5 class="titleimg">
+                    Torre de Computadora 6
+                </h5>
+            </a>
+        </div>
+
+        <div>
+            <a href="{{ url_for('torre7') }}">
+                <img
+                    src="{{ url_for('static', filename='imagenes/imagen_torre_pc7.jfif.jpeg') }}"
+                    alt="Torre de computadora 7"
+                    class="imagen_torre_7">
+
+                <h5 class="titleimg">
+                    Torre de Computadora 7
+                </h5>
+            </a>
+        </div>
+
+        <div>
+            <a href="{{ url_for('torre8') }}">
+                <img
+                    src="{{ url_for('static', filename='imagenes/imagen_torre_pc8.jfif.jpeg') }}"
+                    alt="Torre de computadora 8"
+                    class="imagen_torre_8">
+
+                <h5 class="titleimg">
+                    Torre Compacta
+                </h5>
+            </a>
+        </div>
+
+        <div>
+            <a href="{{ url_for('torre9') }}">
+                <img
+                    src="{{ url_for('static', filename='imagenes/imagen_torre_pc9.jfif.jpeg') }}"
+                    alt="Torre de computadora 9"
+                    class="imagen_torre_9">
+
+                <h5 class="titleimg">
+                    Torre de Computadora 9
+                </h5>
+            </a>
+        </div>
+
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="footer">
+
+        <p>
+            &copy; Rentec 2026 GBM
+        </p>
+
+        <p>
+            Conformada por Gabriel, Sharon, Julian y Joseph
+        </p>
+
+        <p>
+            Hecho en el Colegio Gabriel Betancourt Mejía
+        </p>
+
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de alquiler | Rentec</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='diseños.css') }}">
+
+    <style>
+        .carrito-contenedor {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 25px;
+            color: #eaf6ff;
+        }
+
+        .carrito-contenedor h1 {
+            color: #35c9e8;
+            margin-bottom: 10px;
+        }
+
+        .producto-carrito,
+        .resumen-carrito,
+        .carrito-vacio {
+            background: #172536;
+            border: 1px solid #31516b;
+            border-radius: 14px;
+            padding: 22px;
+            margin: 22px 0;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .producto-carrito h2,
+        .resumen-carrito h2 {
+            color: #35c9e8;
+        }
+
+        .datos-producto {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .campo-carrito {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .campo-carrito input,
+        .campo-carrito select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px;
+            border: 1px solid #456780;
+            border-radius: 8px;
+            background: #0e1b29;
+            color: white;
+        }
+
+        .precio-producto {
+            color: #52e0bd;
+            font-weight: bold;
+        }
+
+        .botones-carrito {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .boton-carrito {
+            display: inline-block;
+            padding: 11px 17px;
+            border: none;
+            border-radius: 8px;
+            background: #20bedb;
+            color: #071923;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .boton-eliminar,
+        .boton-vaciar {
+            background: #e05252;
+            color: white;
+        }
+
+        .total-carrito {
+            color: #52e0bd;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .carrito-vacio {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .carrito-vacio p {
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .carrito-contenedor {
+                margin: 20px auto;
+                padding: 14px;
+            }
+
+            .producto-carrito,
+            .resumen-carrito {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="{{ url_for('inicio_exitoso') }}">
+        <h2>RenTec</h2>
+    </a>
+
+    <nav>
+        <a href="{{ url_for('inicio') }}">Inicio</a>
+        <a href="{{ url_for('computadores') }}">Computadores</a>
+        <a href="{{ url_for('tecladosmaus') }}">Teclados y mouse</a>
+        <a href="{{ url_for('torresdepc') }}">Torres de PC</a>
+
+
+
+        <!-- USUARIO NO LOGUEADO -->
+        {% if not session.get('id_usuario') %}
+
+        <li class="usuario-menu">
+            <a href="{{ url_for('login_registro') }}" class="enlace-usuario enlace-login">
+                Registro / Login
+            </a>
+        </li>
+
+        <!-- USUARIO LOGUEADO -->
+        {% else %}
+
+        <li class="usuario-menu">
+            <a href="{{ url_for('inicio_usuario') }}" class="enlace-usuario enlace-perfil">
+                <span class="icono-usuario">👤</span>
+                <span class="texto-usuario">
+                    Hola, {{ session.get('nombre') }}
+                </span>
+            </a>
+        </li>
+
+        <li class="usuario-menu">
+            <a href="{{ url_for('logout') }}" class="enlace-usuario enlace-logout">
+                <span class="icono-salida">↪</span>
+                Cerrar sesión
+            </a>
+        </li>
+
+        {% endif %}
+
+        </ul>
+
+
+    </nav>
+</header>
+
+<main class="carrito-contenedor">
+
+    <h1>🛒 Mi carrito de alquiler</h1>
+    <p>Revisa los dispositivos y configura el tiempo de alquiler.</p>
+
+    {% if carrito %}
+
+        {% for producto in carrito %}
+
+            <section class="producto-carrito">
+
+                <h2>{{ producto.nombre }}</h2>
+
+                {% if producto.get('imagen') %}
+                    <img
+                        src="{{ url_for('static', filename=producto.imagen) }}"
+                        alt="{{ producto.nombre }}"
+                        width="180">
+                {% endif %}
+
+                <div class="datos-producto">
+                    <p>
+                        Precio por hora:
+                        <strong>
+                            ${{ "{:,.0f}".format(producto.precio_hora).replace(",", ".") }} COP
+                        </strong>
+                    </p>
+
+                    <p>
+                        Precio por día:
+                        <strong>
+                            ${{ "{:,.0f}".format(producto.precio_dia).replace(",", ".") }} COP
+                        </strong>
+                    </p>
+                </div>
+
+                <form action="{{ url_for('actualizar_carrito', id_producto=loop.index0) }}"
+                      method="POST">
+
+                    <div class="datos-producto">
+
+                        <div class="campo-carrito">
+                            <label for="duracion-{{ loop.index0 }}">
+                                Tipo de alquiler
+                            </label>
+
+                            <select name="duracion"
+                                    id="duracion-{{ loop.index0 }}"
+                                    required>
+
+                                <option value="hora"
+                                    {% if producto.duracion == 'hora' %}selected{% endif %}>
+                                    Por hora
+                                </option>
+
+                                <option value="dia"
+                                    {% if producto.duracion == 'dia' %}selected{% endif %}>
+                                    Por día
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="campo-carrito">
+                            <label for="tiempo-{{ loop.index0 }}">
+                                Duración (horas o días)
+                            </label>
+
+                            <input
+                                type="number"
+                                name="tiempo"
+                                id="tiempo-{{ loop.index0 }}"
+                                min="1"
+                                max="365"
+                                value="{{ producto.tiempo }}"
+                                required>
+                        </div>
+
+                        <div class="campo-carrito">
+                            <label for="cantidad-{{ loop.index0 }}">
+                                Cantidad de unidades
+                            </label>
+
+                            <input
+                                type="number"
+                                name="cantidad"
+                                id="cantidad-{{ loop.index0 }}"
+                                min="1"
+                                max="99"
+                                value="{{ producto.cantidad }}"
+                                required>
+                        </div>
+
+                    </div>
+
+                    <p class="precio-producto">
+                        Subtotal:
+                        ${{ "{:,.0f}".format(producto.subtotal).replace(",", ".") }} COP
+                    </p>
+
+                    <div class="botones-carrito">
+                        <button type="submit" class="boton-carrito">
+                            Actualizar alquiler
+                        </button>
+                    </div>
+
+                </form>
+
+                <form action="{{ url_for('eliminar_del_carrito', id_producto=loop.index0) }}"
+                      method="POST"
+                      class="botones-carrito">
+
+                    <button type="submit"
+                            class="boton-carrito boton-eliminar">
+                        Eliminar producto
+                    </button>
+                </form>
+
+            </section>
+
+        {% endfor %}
+
+        <section class="resumen-carrito">
+            <h2>Resumen del alquiler</h2>
+
+            <p>
+                Unidades de productos diferentes:
+                <strong>{{ carrito|length }}</strong>
+            </p>
+
+            <p class="total-carrito">
+                Total: ${{ "{:,.0f}".format(total).replace(",", ".") }} COP
+            </p>
+
+            <div class="botones-carrito">
+
+                <a href="{{ url_for('inicio') }}"
+                   class="boton-carrito">
+                    Seguir explorando
+                </a>
+
+                <form action="{{ url_for('vaciar_carrito') }}"
+                      method="POST">
+
+                    <button type="submit"
+                            class="boton-carrito boton-vaciar">
+                        Vaciar carrito
+                    </button>
+                </form>
+
+                <form action="{{ url_for('solicitar_alquiler') }}" method="POST">
+                    <button type="submit" class="boton-carrito">
+                        Solicitar alquiler
+                    </button>
+                </form>
+
+            </div>
+        </section>
+
+    {% else %}
+
+        <section class="carrito-vacio">
+            <h2>Tu carrito está vacío</h2>
+
+            <p>
+                Todavía no has agregado dispositivos para alquilar.
+            </p>
+
+            <div class="botones-carrito" style="justify-content:center;">
+                <a href="{{ url_for('computadores') }}"
+                   class="boton-carrito">
+                    Ver computadores
+                </a>
+
+                <a href="{{ url_for('tecladosmaus') }}"
+                   class="boton-carrito">
+                    Ver teclados y mouse
+                </a>
+
+                <a href="{{ url_for('torresdepc') }}"
+                   class="boton-carrito">
+                    Ver torres de PC
+                </a>
+            </div>
+        </section>
+
+    {% endif %}
+
+</main>
+
+<footer>
+    <p>© Rentec - Alquiler de dispositivos tecnológicos</p>
+</footer>
+
+</body>
+</html>
