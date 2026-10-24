@@ -25,12 +25,12 @@ app.permanent_session_lifetime = timedelta(days=7)
 # Configuración MySQL para bd local
 # ==========================================
 
-# app.config["MYSQL_HOST"] = "localhost"
-# app.config["MYSQL_USER"] = "root"
-# app.config["MYSQL_PASSWORD"] = ""
-# app.config["MYSQL_DB"] = "rentec"
+app.config["MYSQL_HOST"] = "localhost"
+app.config["MYSQL_USER"] = "root"
+app.config["MYSQL_PASSWORD"] = ""
+app.config["MYSQL_DB"] = "rentec"
 
-# mysql = MySQL(app)
+mysql = MySQL(app)
 
 
 # ==========================================
