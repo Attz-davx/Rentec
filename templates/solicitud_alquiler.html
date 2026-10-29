@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Finalizar alquiler | Rentec</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='diseños.css') }}">
+</head>
+
+<body>
+
+    <header class="encabezado">
+        <a href="{{ url_for('inicio_exitoso') }}" class="logo">
+            RenTec<span>.</span>
+        </a>
+
+        <nav class="navegacion">
+            <a href="{{ url_for('inicio') }}">Inicio</a>
+            <a href="{{ url_for('computadores') }}">Computadores</a>
+            <a href="{{ url_for('tecladosmaus') }}">Teclados y mouse</a>
+            <a href="{{ url_for('torresdepc') }}">Torres de PC</a>
+            <a href="{{ url_for('carrito') }}" class="enlace-carrito">
+                Mi carrito
+            </a>
+
+            
+            <!-- USUARIO NO LOGUEADO -->
+            {% if not session.get('id_usuario') %}
+
+            <li class="usuario-menu">
+                <a href="{{ url_for('login_registro') }}" class="enlace-usuario enlace-login">
+                    Registro / Login
+                </a>
+            </li>
+
+            <!-- USUARIO LOGUEADO -->
+            {% else %}
+
+            <li class="usuario-menu">
+                <a href="{{ url_for('inicio_usuario') }}" class="enlace-usuario enlace-perfil">
+                    <span class="icono-usuario">👤</span>
+                    <span class="texto-usuario">
+                        Hola, {{ session.get('nombre') }}
+                    </span>
+                </a>
+            </li>
+
+            <li class="usuario-menu">
+                <a href="{{ url_for('logout') }}" class="enlace-usuario enlace-logout">
+                    <span class="icono-salida">↪</span>
+                    Cerrar sesión
+                </a>
+            </li>
+
+            {% endif %}
+
+            </ul>
+
+        </nav>
+    </header>
+
+    <main class="contenedor-principal">
+
+        <section class="presentacion">
+            <span class="etiqueta">RENTEC · ALQUILER TECNOLÓGICO</span>
+
+            <h1>Finaliza tu alquiler</h1>
+
+            <p>
+                Completa tus datos personales y selecciona tu método
+                de pago para continuar con tu solicitud.
+            </p>
+
+            <div class="pasos">
+                <div class="paso paso-activo">
+                    <span>1</span>
+                    <p>Datos personales</p>
+                </div>
+
+                <div class="linea-pasos"></div>
+
+                <div class="paso">
+                    <span>2</span>
+                    <p>Finalización</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="distribucion">
+
+            <section class="formulario-tarjeta">
+
+                <div class="titulo-formulario">
+                    <div>
+                        <h2>Información del cliente</h2>
+                        <p>Ingresa tus datos correctamente.</p>
+                    </div>
+
+                    <div class="icono-persona">👤</div>
+                </div>
+
+                <form action="{{ url_for('generar_factura') }}" method="POST">
+                      method="POST"
+                      class="formulario">
+
+                    <div class="grupo-campos">
+
+                        <div class="campo">
+                            <label for="nombre">Nombre *</label>
+                            <input
+                                type="text"
+                                id="nombre"
+                                name="nombre"
+                                placeholder="Ej. Gabriel"
+                                autocomplete="given-name"
+                                maxlength="60"
+                                required>
+                        </div>
+
+                        <div class="campo">
+                            <label for="apellido">Apellido *</label>
+                            <input
+                                type="text"
+                                id="apellido"
+                                name="apellido"
+                                placeholder="Ej. Rodríguez"
+                                autocomplete="family-name"
+                                maxlength="60"
+                                required>
+                        </div>
+
+                        <div class="campo">
+                            <label for="telefono">Teléfono celular *</label>
+                            <input
+                                type="tel"
+                                id="telefono"
+                                name="telefono"
+                                placeholder="Ej. 3001234567"
+                                autocomplete="tel"
+                                inputmode="tel"
+                                maxlength="20"
+                                required>
+                            <small>Incluye un número de contacto válido.</small>
+                        </div>
+
+                        <div class="campo">
+                            <label for="tipo_documento">Tipo de documento *</label>
+                            <select
+                                id="tipo_documento"
+                                name="tipo_documento"
+                                required>
+
+                                <option value="" disabled selected>
+                                    Selecciona una opción
+                                </option>
+
+                                <option value="CC">
+                                    Cédula de ciudadanía (C.C.)
+                                </option>
+
+                                <option value="CE">
+                                    Cédula de extranjería (C.E.)
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="campo campo-completo">
+                            <label for="numero_documento">
+                                Número de documento *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="numero_documento"
+                                name="numero_documento"
+                                placeholder="Escribe tu número de documento"
+                                autocomplete="off"
+                                maxlength="30"
+                                required>
+                        </div>
+
+                        <div class="campo campo-completo">
+                            <label for="direccion">Dirección de residencia *</label>
+
+                            <input
+                                type="text"
+                                id="direccion"
+                                name="direccion"
+                                placeholder="Ej. Calle 45 # 12-30, Bogotá"
+                                autocomplete="street-address"
+                                maxlength="180"
+                                required>
+                        </div>
+
+                        <div class="campo campo-completo">
+                            <label for="metodo_pago">Método de pago *</label>
+
+                            <select
+                                id="metodo_pago"
+                                name="metodo_pago"
+                                required>
+
+                                <option value="" disabled selected>
+                                    Selecciona tu método de pago
+                                </option>
+
+                                <option value="Nequi">Nequi</option>
+                                <option value="Daviplata">Daviplata</option>
+                                <option value="Addi">Addi</option>
+                            </select>
+
+                            <small>
+                                La disponibilidad y las condiciones del pago
+                                se confirmarán antes de completar el alquiler.
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <div class="aviso-privacidad">
+                        
+                        <p>
+                            Tus datos deben utilizarse únicamente para
+                            gestionar la solicitud de alquiler y de acuerdo
+                            con la política de tratamiento de datos de Rentec.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="boton-finalizar">
+                        Finalizar solicitud
+                        <span>→</span>
+                    </button>
+
+                    <a href="{{ url_for('carrito') }}"
+                       class="volver-carrito">
+                        ← Volver al carrito
+                    </a>
+
+                </form>
+            </section>
+
+            <aside class="panel-lateral">
+                <div class="icono-tecnologia">💻</div>
+
+                <h2>Tu tecnología, a tu manera.</h2>
+
+                <p>
+                    Estamos preparando tu solicitud de alquiler.
+                    Verifica que todos tus datos estén correctos
+                    antes de continuar.
+                </p>
+
+                <div class="beneficio">
+                    <span>✓</span>
+                    <div>
+                        <strong>Datos organizados</strong>
+                        <p>Información para gestionar tu solicitud.</p>
+                    </div>
+                </div>
+
+                <div class="beneficio">
+                    <span>✓</span>
+                    <div>
+                        <strong>Opciones de pago</strong>
+                        <p>Nequi, Daviplata y Addi.</p>
+                    </div>
+                </div>
+
+                <div class="nota-panel">
+                    <strong>Importante</strong>
+                    <p>
+                        Enviar el formulario no significa que el alquiler
+                        o el pago hayan sido aprobados.
+                    </p>
+                </div>
+            </aside>
+
+        </div>
+
+    </main>
+
+    <footer class="pie-pagina">
+        <p>© Rentec - Alquiler de dispositivos tecnológicos</p>
+        <p>Tecnología cuando la necesitas.</p>
+    </footer>
+
+</body>
+</html>

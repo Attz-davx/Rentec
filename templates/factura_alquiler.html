@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura de alquiler - Rentec</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            background: #0b1420;
+            color: #263445;
+            font-family: Arial, sans-serif;
+        }
+
+        .factura {
+            max-width: 850px;
+            margin: auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 3px solid #25c6e6;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #087e9b;
+            margin: 0;
+        }
+
+        h2 {
+            color: #172536;
+        }
+
+        h3 {
+            color: #087e9b;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+            margin-top: 28px;
+        }
+
+        .datos {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .dato {
+            background: #f1f7fa;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-wrap: anywhere;
+        }
+
+        .dato strong {
+            display: block;
+            font-size: 12px;
+            color: #637386;
+            margin-bottom: 5px;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background: #172536;
+            color: white;
+        }
+
+        th, td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .total {
+            margin: 25px 0 0 auto;
+            padding: 20px;
+            max-width: 300px;
+            background: #e8faff;
+            border: 1px solid #25c6e6;
+            border-radius: 8px;
+        }
+
+        .total strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 26px;
+            color: #087e9b;
+        }
+
+        .pie {
+            text-align: center;
+            color: #637386;
+            margin-top: 35px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+
+        .acciones {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .boton {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 7px;
+            background: #25c6e6;
+            color: #0b1420;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 550px) {
+            .factura {
+                padding: 18px 12px;
+            }
+
+            .datos {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 5px;
+            }
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .factura {
+                max-width: none;
+                padding: 0;
+            }
+
+            .acciones {
+                display: none;
+            }
+
+            th {
+                background: #172536 !important;
+                color: white !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="factura">
+
+    <header>
+        <div>
+            <h1>RENTEC</h1>
+            <p>Alquiler de dispositivos tecnológicos</p>
+        </div>
+
+        <div>
+            <h2>FACTURA DE ALQUILER</h2>
+            <p>Resumen de la solicitud</p>
+        </div>
+    </header>
+
+    <h3>Datos del cliente</h3>
+
+    <div class="datos">
+        <div class="dato">
+            <strong>Nombre completo</strong>
+            {{ cliente.nombre }} {{ cliente.apellido }}
+        </div>
+
+        <div class="dato">
+            <strong>Teléfono</strong>
+            {{ cliente.telefono }}
+        </div>
+
+        <div class="dato">
+            <strong>Dirección</strong>
+            {{ cliente.direccion }}
+        </div>
+
+        <div class="dato">
+            <strong>Tipo de documento</strong>
+            {{ cliente.tipo_documento }}
+        </div>
+
+        <div class="dato">
+            <strong>Número de documento</strong>
+            {{ cliente.numero_documento }}
+        </div>
+
+        <div class="dato">
+            <strong>Método de pago</strong>
+            {{ cliente.metodo_pago }}
+        </div>
+    </div>
+
+    <h3>Dispositivos alquilados</h3>
+
+    <div class="tabla-contenedor">
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Duración</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>
+                        {{ producto.tiempo }}
+                        {{ 'día(s)' if producto.duracion == 'dia' else 'hora(s)' }}
+                    </td>
+                    <td>{{ producto.cantidad }}</td>
+                    <td>
+                        ${{ "{:,.0f}".format(producto.precio).replace(",", ".") }}
+                    </td>
+                    <td>
+                        ${{ "{:,.0f}".format(producto.subtotal).replace(",", ".") }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="total">
+        Valor total del alquiler
+        <strong>${{ "{:,.0f}".format(total).replace(",", ".") }} COP</strong>
+    </div>
+
+    <div class="pie">
+        <p><strong>Gracias por elegir Rentec.</strong></p>
+        <p>Conserva este comprobante para tu referencia.</p>
+    </div>
+
+</div>
+
+<div class="acciones">
+    <button class="boton" onclick="window.print()">
+        Imprimir / Guardar PDF
+    </button>
+
+    <a class="boton" href="{{ url_for('inicio') }}">
+        Volver al inicio
+    </a>
+</div>
+
+</body>
+</html>
