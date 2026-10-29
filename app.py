@@ -580,7 +580,7 @@ def inicio_exitoso():
 
 
     return render_template(
-        "Login_exitoso.html"
+        "login_exitoso.html"
     )
 
 
