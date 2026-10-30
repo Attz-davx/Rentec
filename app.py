@@ -563,9 +563,6 @@ def login():
         return redirect(url_for("inicio_exitoso"))
 
 
-    return render_template("Login.html")
-
-
 # =========================================================
 # MENSAJE DE LOGIN EXITOSO
 # =========================================================
